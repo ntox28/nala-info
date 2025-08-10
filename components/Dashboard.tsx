@@ -235,8 +235,9 @@ const Dashboard: React.FC = () => {
                 <div className="flex items-center space-x-4">
                     <img src="https://xkvgflhjcnkythytbkuj.supabase.co/storage/v1/object/public/publik/Nala%20Logo.png" alt="Nala Logo" className="h-14" />
                     <div>
-                         <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">Production Dashboard</h1>
-                         <p className="text-gray-400 text-sm">Live Order Tracking</p>
+                         <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">NALAMEDIA DIGITAL PRINTING</h1>
+                        <p className="text-gray-400 text-sm">|Jl. Prof. Moh. Yamin,Cerbonan,Karanganyar (Timur Stadion 45)|</p>
+                        <p className="text-gray-400 text-sm">|---Email : nalamedia.kra@gmail.com | Telp: 0813-9872-7722---|</p> 
                     </div>
                 </div>
                 <div className="flex items-center space-x-6">
@@ -265,7 +266,7 @@ const Dashboard: React.FC = () => {
 
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/60 rounded-xl shadow-lg flex flex-col overflow-hidden">
                     <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-                        <h2 className="font-semibold text-white text-lg">Sambil Menunggu...</h2>
+                        <h2 className="font-semibold text-white text-lg">Sedang Mendengarkan...</h2>
                          <button onClick={() => setIsMuted(m => !m)} className="p-2 rounded-full hover:bg-gray-700 transition-colors" aria-label={isMuted ? "Unmute Video" : "Mute Video"}>
                             {isMuted ? <SpeakerMutedIcon className="w-5 h-5" /> : <SpeakerLoudIcon className="w-5 h-5" />}
                         </button>
