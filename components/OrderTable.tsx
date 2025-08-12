@@ -70,7 +70,9 @@ const OrderTable: React.FC<OrderTableProps> = ({ orders, updatedItemIds, loading
                                 <td className="px-6 py-4 whitespace-nowrap text-gray-300">{item.customer_name}</td>
                                 <td className="px-6 py-4 text-gray-300">{description}</td>
                                 <td className="px-6 py-4 text-center whitespace-nowrap text-gray-300">{item.qty}</td>
-                                <td className="px-6 py-4 text-center"><StatusBadge status={item.status} /></td>
+                                <td className="px-6 py-4 text-center">
+                                    <StatusBadge status={item.status} isUpdated={updatedItemIds.has(item.id)} />
+                                </td>
                             </tr>
                         );
                     })}

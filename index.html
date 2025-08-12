@@ -61,6 +61,17 @@
         from { transform: translateX(100%); }
         to { transform: translateX(0); }
       }
+
+      /* One-shot ping animation for status badges */
+      @keyframes ping-once {
+        to {
+          transform: scale(1.8);
+          opacity: 0;
+        }
+      }
+      .animate-status-ping {
+        animation: ping-once 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
     </style>
   <script type="importmap">
 {
