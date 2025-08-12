@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { ProductionItem, ProductionStatus, Order as FetchedOrder } from '../types';
@@ -98,6 +99,7 @@ const Dashboard: React.FC = () => {
     const [updatedItemIds, setUpdatedItemIds] = useState(new Set<number>());
     const [playlist, setPlaylist] = useState<string[]>(['mKq7nk8pQFs']);
     const [isMuted, setIsMuted] = useState<boolean>(true);
+    const [videoTitle, setVideoTitle] = useState<string>('Memuat Judul...');
 
 
     const stats = useMemo(() => {
@@ -228,6 +230,31 @@ const Dashboard: React.FC = () => {
 
     const firstVideoId = videoIds[0] || 'mKq7nk8pQFs';
     const playlistString = videoIds.join(',');
+    
+    useEffect(() => {
+        if (!firstVideoId) {
+            setVideoTitle('Playlist Kosong');
+            return;
+        }
+
+        const fetchVideoTitle = async () => {
+            try {
+                const response = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${firstVideoId}&format=json`);
+                if (!response.ok) {
+                    throw new Error('Video title not found');
+                }
+                const data = await response.json();
+                setVideoTitle(data.title || 'Judul Tidak Tersedia');
+            } catch (error) {
+                console.error("Error fetching YouTube video title:", error);
+                setVideoTitle('Sedang Mendengarkan...'); // Fallback on error
+            }
+        };
+
+        setVideoTitle('Memuat Judul...');
+        fetchVideoTitle();
+    }, [firstVideoId]);
+
 
     return (
         <main className="min-h-screen bg-gray-900 text-gray-300 p-4 lg:p-6 flex flex-col">
@@ -236,7 +263,7 @@ const Dashboard: React.FC = () => {
                     <img src="https://xkvgflhjcnkythytbkuj.supabase.co/storage/v1/object/public/publik/Nala%20Logo.png" alt="Nala Logo" className="h-14" />
                     <div>
                          <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">NALAMEDIA DIGITAL PRINTING</h1>
-                        <p className="text-gray-400 text-sm">|Jl. Prof. Moh. Yamin,Cerbonan,Karanganyar (Timur Stadion 45)|</p>
+                        <p className="text-gray-400 text-sm">|Jl. Prof. Moh. Yamin,Cerbonan, Karanganyar (Timur Stadion 45)|</p>
                         <p className="text-gray-400 text-sm">|---Email : nalamedia.kra@gmail.com | Telp: 0813-9872-7722---|</p> 
                     </div>
                 </div>
@@ -256,8 +283,19 @@ const Dashboard: React.FC = () => {
 
             <div className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-gray-800/50 backdrop-blur-sm border border-gray-700/60 rounded-xl shadow-lg flex flex-col overflow-hidden">
-                   <div className="p-4 border-b border-gray-700">
-                        <h2 className="font-semibold text-white text-lg">Live Production Feed</h2>
+                   <div className="p-4 border-b border-gray-700 overflow-hidden relative flex h-[28px] items-center">
+                        <div className="absolute flex animate-marquee whitespace-nowrap">
+                            <h2 className="font-semibold text-white text-lg mx-4">NALAMEDIA DIGITAL PRINTING</h2>
+                            <h2 className="font-semibold text-white text-lg mx-4">LAYANAN CETAK 1 HARI JADI</h2>
+                            <h2 className="font-semibold text-white text-lg mx-4">CETAK : BANNER,STICKER,A3+,DLL</h2>
+                            <h2 className="font-semibold text-white text-lg mx-4">MELAYANI PEMBUATAN : KAOS SATUAN,MUG,BRANDING,LANYARD,BENDERA,NOTA,DLL</h2>
+                        </div>
+                        <div className="absolute flex animate-marquee2 whitespace-nowrap">
+                            <h2 className="font-semibold text-white text-lg mx-4">NALAMEDIA DIGITAL PRINTING</h2>
+                            <h2 className="font-semibold text-white text-lg mx-4">LAYANAN CETAK 1 HARI JADI</h2>
+                            <h2 className="font-semibold text-white text-lg mx-4">CETAK : BANNER,STICKER,A3+,DLL</h2>
+                            <h2 className="font-semibold text-white text-lg mx-4">MELAYANI PEMBUATAN : KAOS SATUAN,MUG,BRANDING,LANYARD,BENDERA,NOTA,DLL</h2>
+                        </div>
                     </div>
                     <div className="flex-grow overflow-y-auto">
                         <OrderTable orders={sortedItems} updatedItemIds={updatedItemIds} loading={loading} />
@@ -265,8 +303,12 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/60 rounded-xl shadow-lg flex flex-col overflow-hidden">
-                    <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-                        <h2 className="font-semibold text-white text-lg">Sedang Mendengarkan...</h2>
+                    <div className="p-4 border-b border-gray-700 flex justify-between items-center gap-x-4">
+                        <div className="flex-1 min-w-0">
+                           <h2 className="font-semibold text-white text-lg truncate" title={videoTitle}>
+                               {videoTitle}
+                           </h2>
+                        </div>
                          <button onClick={() => setIsMuted(m => !m)} className="p-2 rounded-full hover:bg-gray-700 transition-colors" aria-label={isMuted ? "Unmute Video" : "Mute Video"}>
                             {isMuted ? <SpeakerMutedIcon className="w-5 h-5" /> : <SpeakerLoudIcon className="w-5 h-5" />}
                         </button>
