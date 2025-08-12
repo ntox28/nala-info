@@ -27,7 +27,7 @@ const createMockItem = (): ProductionItem => ({
     panjang: Math.random() > 0.3 ? +(Math.random() * 5 + 1).toFixed(1) : null,
     lebar: Math.random() > 0.3 ? +(Math.random() * 2 + 1).toFixed(1) : null,
     qty: Math.floor(Math.random() * 50) + 1,
-    status: 'Belum Dikerjakan',
+    status: 'Pending',
     created_at: new Date().toISOString(),
 });
 
@@ -35,7 +35,7 @@ const createMockItem = (): ProductionItem => ({
 const initialOrders: ProductionItem[] = Array.from({ length: 10 }, (_, i) => {
     const item = createMockItem();
     item.id = i + 1;
-    const statuses: ProductionStatus[] = ['Belum Dikerjakan', 'Proses', 'Selesai'];
+    const statuses: ProductionStatus[] = ['Pending', 'Proses', 'Ready'];
     item.status = getRandomElement(statuses);
     // Stagger creation times for more realistic sorting
     item.created_at = new Date(Date.now() - i * 1000 * 60).toISOString();
@@ -59,15 +59,15 @@ export const updateOrders = (currentOrders: ProductionItem[]): ProductionItem[] 
 
     let itemWasUpdated = false;
     switch (orderToUpdate.status) {
-      case 'Belum Dikerjakan':
+      case 'Pending':
         orderToUpdate.status = 'Proses';
         itemWasUpdated = true;
         break;
       case 'Proses':
-        orderToUpdate.status = 'Selesai';
+        orderToUpdate.status = 'Ready';
         itemWasUpdated = true;
         break;
-      case 'Selesai':
+      case 'Ready':
          // If an order is finished, remove it and add a new one to keep the list fresh
          orders.splice(orderToUpdateIndex, 1);
          orders.push(createMockItem());
@@ -92,8 +92,10 @@ export const updateOrders = (currentOrders: ProductionItem[]): ProductionItem[] 
         // Sort by status priority then by time
         const statusPriority: Record<ProductionStatus, number> = {
             'Proses': 1,
-            'Belum Dikerjakan': 2,
-            'Selesai': 3,
+            'Waiting': 2,
+            'Pending': 3,
+            'Ready': 4,
+            'Delivered': 5
         };
         if (statusPriority[a.status] !== statusPriority[b.status]) {
             return statusPriority[a.status] - statusPriority[b.status];

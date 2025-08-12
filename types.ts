@@ -1,4 +1,4 @@
-export type ProductionStatus = 'Belum Dikerjakan' | 'Proses' | 'Selesai';
+export type ProductionStatus = 'Pending' | 'Waiting' | 'Proses' | 'Ready' | 'Delivered';
 
 export interface ProductionItem {
     id: number;
@@ -23,7 +23,7 @@ export interface Order {
         id: number;
         deskripsi_pesanan: string | null;
         qty: number;
-        status_produksi: ProductionStatus;
+        status_produksi: ProductionStatus; // Reverted to match the actual DB column name
         created_at: string;
         panjang: number | null;
         lebar: number | null;
