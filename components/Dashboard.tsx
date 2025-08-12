@@ -6,12 +6,12 @@ import CompressIcon from './icons/CompressIcon';
 import ExpandIcon from './icons/ExpandIcon';
 import SpeakerLoudIcon from './icons/SpeakerLoudIcon';
 import SpeakerMutedIcon from './icons/SpeakerMutedIcon';
-import AIAssistant from './AIAssistant';
 import BoxArrowOutIcon from './icons/BoxArrowOutIcon';
 import DeliveredItemsModal from './DeliveredItemsModal';
 import DeliveredItemsPanel from './DeliveredItemsPanel';
 import SwitchHorizontalIcon from './icons/SwitchHorizontalIcon';
-import AIAssistantIcon from './icons/AIAssistantIcon';
+import WhatsappIcon from './icons/WhatsappIcon';
+import MapPinIcon from './icons/MapPinIcon';
 
 
 // --- SVG Icons for Stat Cards ---
@@ -105,7 +105,6 @@ const Dashboard: React.FC = () => {
     const [playlist, setPlaylist] = useState<string[]>(['mKq7nk8pQFs']);
     const [isMuted, setIsMuted] = useState<boolean>(true);
     const [videoTitle, setVideoTitle] = useState<string>('Memuat Judul...');
-    const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
     const [isDeliveredModalOpen, setIsDeliveredModalOpen] = useState(false);
     const [sidePanelContent, setSidePanelContent] = useState<'youtube' | 'delivered'>('youtube');
 
@@ -340,13 +339,18 @@ const Dashboard: React.FC = () => {
                     {/* Controls Card */}
                     <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-4 flex flex-col justify-between">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                                <button onClick={() => setIsAIAssistantOpen(true)} className="p-2 bg-purple-600/20 text-purple-300 rounded-lg hover:bg-purple-600/40 transition-colors" aria-label="Buka Asisten AI">
-                                    <AIAssistantIcon className="h-5 w-5" />
-                                </button>
-                                <div>
-                                    <p className="text-sm font-medium text-white">Nala AI</p>
-                                    <p className="text-xs text-gray-400">Siap Membantu</p>
+                            <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-2">
+                                     <a href="https://wa.me/6281398727722" target="_blank" rel="noopener noreferrer" className="p-2 bg-green-600/20 text-green-300 rounded-lg hover:bg-green-600/40 transition-colors" aria-label="Hubungi via WhatsApp">
+                                         <WhatsappIcon className="h-5 w-5" />
+                                     </a>
+                                     <a href="https://maps.app.goo.gl/ivPF6LWBTuCVuUx46?g_st=aw" target="_blank" rel="noopener noreferrer" className="p-2 bg-sky-600/20 text-sky-300 rounded-lg hover:bg-sky-600/40 transition-colors" aria-label="Lihat di Google Maps">
+                                         <MapPinIcon className="h-5 w-5" />
+                                     </a>
+                                </div>
+                                 <div>
+                                    <p className="text-sm font-medium text-white">Info Kontak</p>
+                                    <p className="text-xs text-gray-400">WhatsApp & Lokasi</p>
                                 </div>
                             </div>
 
@@ -424,11 +428,6 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
             </main>
-            <AIAssistant 
-                isOpen={isAIAssistantOpen} 
-                onClose={() => setIsAIAssistantOpen(false)} 
-                productionItems={items}
-            />
             <DeliveredItemsModal
                 isOpen={isDeliveredModalOpen}
                 onClose={() => setIsDeliveredModalOpen(false)}

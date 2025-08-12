@@ -23,24 +23,27 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, productionIt
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isConfigured, setIsConfigured] = useState(false);
 
     useEffect(() => {
+        // Check for API Key presence as soon as the component might become visible.
+        setIsConfigured(!!process.env.API_KEY);
+
         if (isOpen) {
             dialogRef.current?.showModal();
             document.body.style.overflow = 'hidden';
 
             if (messages.length === 0) {
-                 if (!process.env.API_KEY) {
-                    setMessages([{ sender: 'ai', text: 'Konfigurasi API Key untuk AI Assistant tidak ditemukan. Mohon hubungi administrator.' }]);
-                } else {
-                    setMessages([{ sender: 'ai', text: 'Halo! Saya Nala AI. Ada yang bisa saya bantu terkait antrian produksi hari ini?' }]);
-                }
+                const welcomeMessage = isConfigured 
+                    ? 'Halo! Saya Nala AI. Ada yang bisa saya bantu terkait antrian produksi hari ini?'
+                    : 'Halo! Saya Nala AI. Saat ini fitur AI belum dapat digunakan karena API Key belum terkonfigurasi. Mohon hubungi administrator.';
+                setMessages([{ sender: 'ai', text: welcomeMessage }]);
             }
         } else {
             dialogRef.current?.close();
             document.body.style.overflow = 'auto';
         }
-    }, [isOpen]);
+    }, [isOpen, isConfigured]);
 
      useEffect(() => {
         if (chatBodyRef.current) {
@@ -51,7 +54,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, productionIt
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         const trimmedInput = inputValue.trim();
-        if (!trimmedInput || isLoading) return;
+        if (!trimmedInput || isLoading || !isConfigured) return;
 
         setMessages(prev => [...prev, { sender: 'user', text: trimmedInput }]);
         setInputValue('');
@@ -59,7 +62,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, productionIt
 
         try {
             if (!chatRef.current) {
-                const ai = new GoogleGenAI({apiKey: process.env.API_KEY as string});
+                const ai = new GoogleGenAI({apiKey: process.env.API_KEY!}); // Safe to use ! due to isConfigured check
                 const systemInstruction = `You are a helpful and friendly AI assistant for Nala Media Digital Printing, a company in Karanganyar, Indonesia.
 Your name is 'Nala AI'.
 Your purpose is to provide quick and accurate answers about the current production queue based on the data provided.
@@ -110,7 +113,7 @@ Your purpose is to provide quick and accurate answers about the current producti
                 {/* Header */}
                 <header className="flex items-center justify-between p-4 border-b border-gray-700/50 flex-shrink-0">
                     <div className="flex items-center space-x-3">
-                        <AIAssistantIcon className="w-6 h-6 text-purple-400"/>
+                        <AIAssistantIcon className={`w-6 h-6 ${isConfigured ? 'text-purple-400' : 'text-gray-500'}`}/>
                         <h2 className="text-lg font-bold text-white">NALA siap membantu!</h2>
                     </div>
                     <button onClick={onClose} className="p-1 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors" aria-label="Tutup">
@@ -122,7 +125,7 @@ Your purpose is to provide quick and accurate answers about the current producti
                 <div ref={chatBodyRef} className="flex-grow p-4 space-y-4 overflow-y-auto">
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex items-end gap-2 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
-                            {msg.sender === 'ai' && <div className="w-8 h-8 rounded-full bg-purple-500/50 flex items-center justify-center flex-shrink-0"><AIAssistantIcon className="w-5 h-5 text-purple-300"/></div>}
+                            {msg.sender === 'ai' && <div className={`w-8 h-8 rounded-full ${isConfigured ? 'bg-purple-500/50' : 'bg-gray-700'} flex items-center justify-center flex-shrink-0`}><AIAssistantIcon className={`w-5 h-5 ${isConfigured ? 'text-purple-300' : 'text-gray-500'}`}/></div>}
                             <div className={`max-w-md p-3 rounded-2xl text-white ${msg.sender === 'user' ? 'bg-blue-600 rounded-br-lg' : 'bg-gray-700 rounded-bl-lg'}`}>
                                <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
                             </div>
@@ -147,11 +150,11 @@ Your purpose is to provide quick and accurate answers about the current producti
                             type="text"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
-                            placeholder="Tanyakan sesuatu tentang produksi..."
-                            className="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-4 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            disabled={isLoading}
+                            placeholder={isConfigured ? "Tanyakan sesuatu tentang produksi..." : "Fitur AI tidak aktif (API Key tidak ada)"}
+                            className="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-4 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-800/50 disabled:cursor-not-allowed"
+                            disabled={isLoading || !isConfigured}
                         />
-                        <button type="submit" disabled={isLoading || !inputValue.trim()} className="p-2.5 rounded-lg bg-purple-600 text-white hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
+                        <button type="submit" disabled={isLoading || !inputValue.trim() || !isConfigured} className="p-2.5 rounded-lg bg-purple-600 text-white hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
                             <PaperAirplaneIcon className="w-5 h-5"/>
                         </button>
                     </form>
